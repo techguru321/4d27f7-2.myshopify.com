@@ -1,0 +1,144 @@
+<div class="page-width" >
+  <div id="{{ section.id }}">
+    <div class="vm-container">
+      {% if section.settings.heading != blank %}
+        <h3>{{ section.settings.heading }}</h3>
+      {% endif %}
+      {% if section.settings.sub_heading != blank %}
+        <p class="vm-sub-heading">{{ section.settings.sub_heading }}</p>
+      {% endif %}
+      <h3 class="vm-msg-box"></h3>
+      <div class="vm-input">
+        <label for="order_email">Email:</label>
+        <input type="email" name="order_email" id="order_email" />
+      </div>
+      <div class="vm-input">
+        <label for="order_number">Order Number:</label>
+        <input type="text" name="order_number" id="order_number" />
+      </div>
+      <div class="vm-btn-wrapper">
+        <a href="javascript:void(0)" id="check_order_status">Submit</a>
+      </div>
+    </div>  
+  </div>
+</div>
+<style>
+  .vm-msg-box{
+    display:none;
+  }
+  .vm-warning{
+    font-size: 12px;
+    color: red;  
+  }
+  .vm-input label{
+    display:block;
+  }
+  #check_order_status{
+    color: #fff;
+    padding: 12px 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 32px;
+    background: #6F7662;
+    text-decoration: none;
+  }
+  .vm-input input{
+    padding: 10px;
+    min-width: 40%;
+  }
+  .vm-container{
+    background-color: #DEC8AF;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+  }
+  .vm-btn-wrapper{
+    margin: 30px 0px 10px;
+  }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script>
+  var vmShop = typeof Shopify !== 'undefined' ? Shopify.shop : document.domain;
+  var vmShopDomain = document.domain;
+  var vmAppPath = "https://apploader.nostalgius.co/apploader/public/";
+  var vmBasePath = 'https://' + vmShopDomain + '/a/vmaker/';
+  $(document).on("click", "#check_order_status", function(e) {
+    var order_email = $("#order_email").val();
+    var order_number = $("#order_number").val();
+    var validationStatus = 0;
+    if(order_email == "") {
+      validationStatus = 0;
+      $("#order_email").parent(".vm-input").find(".vm-warning").remove();
+      $("#order_email").parent(".vm-input").append("<p class='vm-warning'>*Email is required field</p>");
+    }else{
+      validationStatus = 1;
+      $("#order_email").parent(".vm-input").find(".vm-warning").remove();
+    }
+    if(order_number == "") {
+      validationStatus = 0;
+      $("#order_number").parent(".vm-input").find(".vm-warning").remove();
+      $("#order_number").parent(".vm-input").append("<p class='vm-warning'>*Order number is required field</p>");
+    }else{
+      $("#order_number").parent(".vm-input").find(".vm-warning").remove();
+      validationStatus = 1;
+    }
+    if(parseInt(validationStatus) == 1){
+        $.ajax({
+          type: 'POST',
+          data:{
+            "shop": vmShop,
+            "orderNumber": order_number,
+            "orderEmail": order_email,
+          },
+          url: vmBasePath+"check-order-status",
+          success: function(data) {
+            //console.log(data);
+            if(data != 0){
+              var url = vmAppPath + 'videoHome?orderNumber='+data.order_number+'&orderId='+data.order_id+'&shop='+data.shop+'&order_email='+data.order_email;
+              window.open(url, "_blank");
+            }else{
+              //alert("not found");
+              $(".vm-msg-box").html(" ");
+              $(".vm-msg-box").html("!Opps There is no order matched with this email and order number");
+              $(".vm-msg-box").show();
+              setTimeout(function(){
+                 $(".vm-msg-box").html(" ");
+              }, 5000);
+            }
+          }
+        });  
+    }
+    
+  });
+</script>
+{% schema %}
+  {
+    "name": "Add media Section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "default": "Order Status",
+        "label": "Heading"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "sub_heading",
+        "default": "Check your media status",
+        "label": "Sub text"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Add media Section"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

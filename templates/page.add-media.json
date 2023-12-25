@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "9ee99cbf-3a9b-44ad-a385-11e32c4ff044": {
+      "type": "add-media-form-section",
+      "settings": {
+        "heading": "Login to upload media",
+        "sub_heading": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "9ee99cbf-3a9b-44ad-a385-11e32c4ff044"
+  ]
+}

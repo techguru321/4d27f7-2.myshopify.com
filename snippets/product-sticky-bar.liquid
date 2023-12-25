@@ -1,0 +1,45 @@
+{% assign current_product = product.selected_or_first_available_variant %}
+<div class="product__sticky-bar-wrapper">
+  <div class="inner-sticky-bar sticky-bar-top main-flex sticky-bar-content">
+    <a href="/" class="sticky-bar-top_left">
+      {%- assign logo_alt = shop.name | escape -%}
+      {%- assign logo_height = section.settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+      {% capture sizes %}(max-width: {{ section.settings.logo_width | times: 2 }}px) 50vw, {{ section.settings.logo_width }}px{% endcapture %}
+      {% capture widths %}{{ section.settings.logo_width }}, {{ section.settings.logo_width | times: 1.5 | round }}, {{ section.settings.logo_width | times: 2 }}{% endcapture %}
+      {{
+        section.settings.logo
+        | image_url: width: 600
+        | image_tag:
+          class: 'topbar_logo',
+          widths: widths,
+          height: logo_height,
+          width: section.settings.logo_width,
+          alt: logo_alt,
+          sizes: sizes,
+          preload: true
+      }}
+
+      <span class="fatch_product_title"></span>
+    </a>
+    <div class="sticky-bar-top_right font-weight-6 fatch_product_price">{{ current_product.price | money }}</div>
+  </div>
+  <div class="inner-sticky-bar sticky-bar-bottom_main">
+    <div class="sticky-bar-bottom  main-flex sticky-bar-content">
+      <div class="sticky-bar-bottom_left main-flex">
+        <div>
+          {{ section.settings.svg }}
+          <span class="product_instock"
+            ><strong>
+              {%- if current_product.available %}In Stock{% else %}Out of Stock{% endif -%}
+            </strong></span
+          >
+          {% comment %}  {% render 'shipping-icon' %} {% endcomment %}
+
+          <div class="product_delivery">{{ section.settings.delivery_text }}</div>
+        </div>
+        <span class="right-border"></span>
+        <div class="product_media-upload">{{ section.settings.upload_text }}</div>
+      </div>
+    </div>
+  </div>
+</div>

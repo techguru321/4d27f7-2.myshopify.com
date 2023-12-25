@@ -1,0 +1,187 @@
+{% comment %}
+  Renders product variant-picker
+
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} Id of the product form to which the variant picker is associated.
+  - update_url: {Boolean} whether or not to update url when changing variants. If false, the url isn't updated. Default: true (optional).
+  Usage:
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{% endcomment %}
+{%- unless product.has_only_default_variant -%}
+  {%- if block.settings.picker_type == 'button' -%}
+    <variant-radios
+      id="variant-radios-{{ section.id }}"
+      class="no-js-hidden"
+      data-section="{{ section.id }}"
+      data-url="{{ product.url }}"
+      {% if update_url == false %}
+        data-update-url="false"
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      {%- for option in product.options_with_values -%}
+        <div class="option_set--{{ forloop.index }}  {% if forloop.index != 1 %} option-setDisabled{% endif %}">
+          {% if option.name == Optionheading %}
+            <h2 class="product-variant-title">{{ OptionTitle }}</h2>
+          {% endif %}
+          {% if option.name == Optionheading2 %}
+            <h2 class="product-variant-title">{{ OptionTitle2 }}</h2>
+          {% endif %}
+          {% if option.name == Optionheading3 %}
+            <h2 class="product-variant-title">{{ OptionTitle3 }}</h2>
+          {% endif %}
+          <fieldset class="js product-form__input">
+            <legend class="form__label">{{ option.name }}</legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              Optionheading: Optionheading,
+              Optionheading2: Optionheading2,
+              Optionheading3: Optionheading3
+            %}
+          </fieldset>
+        </div>
+      {%- endfor -%}
+      <script type="application/json">
+        {{ product.variants | json }}
+      </script>
+    </variant-radios>
+    <div id="variant-wrapper-3" class="variant-wrapper three option_set--4 option-setDisabled">
+      <h2 class="product-variant-title"><strong>Magic.</strong> Pre-upload your personal media.</h2>
+      <fieldset class="js product-form__input">
+        <div>
+          <input
+            type="radio"
+            id="PreUploaded"
+            name="properties[Pre Upload Media]"
+            value="Pre Load Your Media"
+            form="{{ product_form_id }}"
+            data-upload = 'Pre-Upload'
+          >
+          <label for="PreUploaded">
+            <div class="opt_wrapper">
+              <span class="option_product_title">Pre Load Your Media</span>
+              <span class="option_value"> Upload your Videos and photos now</span>
+            </div>
+            <span class="Op_price_wrp">Free</span>
+          </label>
+        </div>
+
+        <div>
+          <input
+            type="radio"
+            id="uploadAtHome"
+            name="properties[Pre Upload Media]"
+            value="Upload at home"
+            form="{{ product_form_id }}"
+            data-upload= "Upload at home"
+          >
+          <label for="uploadAtHome">
+            <div class="opt_wrapper">
+              <span class="option_product_title">Upload at home</span>
+              <span class="option_value"> Receive it ready to upload</span>
+            </div>
+            <span class="Op_price_wrp">Free</span>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+    {% comment %}
+    <script type="application/json" variants-title>
+      [{% for vairant in product.variants %}{"{{ vairant.id }}":{{ vairant.metafields.descriptors.subtitle | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]
+    </script>
+    {% endcomment %}
+  {%- else -%}
+    <variant-selects
+      id="variant-selects-{{ section.id }}"
+      class="no-js-hidden"
+      data-section="{{ section.id }}"
+      data-url="{{ product.url }}"
+      {% if update_url == false %}
+        data-update-url="false"
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      {%- for option in product.options_with_values -%}
+        <div class="product-form__input product-form__input--dropdown">
+          1
+          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+            {{ option.name }}
+          </label>
+          <div class="select">
+            <select
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              class="select__select"
+              name="options[{{ option.name | escape }}]"
+              form="{{ product_form_id }}"
+            >
+              {% render 'product-variant-options', product: product, option: option, block: block %}
+            </select>
+            {% render 'icon-caret' %}
+          </div>
+        </div>
+      {%- endfor -%}
+
+      <script type="application/json">
+        {{ product.variants | json }}
+      </script>
+    </variant-selects>
+  {%- endif -%}
+{%- endunless -%}
+
+<noscript class="product-form__noscript-wrapper-{{ section.id }}">
+  <div class="product-form__input{% if product.has_only_default_variant %} hidden{% endif %}">
+    2
+    <label class="form__label" for="Variants-{{ section.id }}">
+      {{- 'products.product.product_variants' | t -}}
+    </label>
+    <div class="select">
+      <select
+        name="id"
+        id="Variants-{{ section.id }}"
+        class="select__select"
+        form="{{ product_form_id }}"
+      >
+        {%- for variant in product.variants -%}
+          <option
+            {% if variant == product.selected_or_first_available_variant %}
+              selected="selected"
+            {% endif %}
+            {% if variant.available == false %}
+              disabled
+            {% endif %}
+            value="{{ variant.id }}"
+          >
+            {%- liquid
+              echo variant.title
+              echo variant.price | money | strip_html | prepend: ' - '
+              if variant.available == false
+                echo 'products.product.sold_out' | t | prepend: ' - '
+              endif
+              if variant.quantity_rule.increment > 1
+                echo 'products.product.quantity.multiples_of' | t: quantity: variant.quantity_rule.increment | prepend: ' - '
+              endif
+              if variant.quantity_rule.min > 1
+                echo 'products.product.quantity.minimum_of' | t: quantity: variant.quantity_rule.min | prepend: ' - '
+              endif
+              if variant.quantity_rule.max != null
+                echo 'products.product.quantity.maximum_of' | t: quantity: variant.quantity_rule.max | prepend: ' - '
+              endif
+              # TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter
+              # theme-check-disable
+              assign cart_quantity = cart | item_count_for_variant: variant.id
+              # theme-check-enable
+              if cart_quantity > 0
+                echo 'products.product.quantity.in_cart_html' | t: quantity: cart_quantity | prepend: ' - '
+              endif
+            -%}
+          </option>
+        {%- endfor -%}
+      </select>
+      {% render 'icon-caret' %}
+    </div>
+  </div>
+</noscript>

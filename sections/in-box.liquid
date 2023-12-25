@@ -1,0 +1,124 @@
+{{ 'component-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign fetch_priority = 'auto'
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+  if section.settings.color_scheme == section.settings.section_color_scheme and section.settings.content_layout == 'no-overlap'
+    assign remove_color_classes = true
+  endif
+-%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.section_color_scheme }}">
+  {% if section.settings.heading != blank %}<h2 class="title inline-richtext h1"> {{ section.settings.heading }}</h2>{% endif %}
+  <div class="page-width">
+    <div class="box_contant">
+    {%- for block in section.blocks -%}
+      {% case block.type %}
+        {%- when 'Box_contant' -%}
+          {% if forloop.index > 2 %}
+          <div class="second_row">
+            {{ block.settings.image_picker1.json }}
+            {% if block.settings.image_picker1 != blank %}
+              <img src="{{ block.settings.image_picker1 | image_url }}" alt="{{ block.settings.image_picker1.alt }}" width="{{ block.settings.image_picker1.width }}" height="{{ block.settings.image_picker1.height }}">
+            {% endif %}
+            {% if block.settings.title %}
+            <h4>{{ block.settings.title }}</h4>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if forloop.index < 3 %}
+          <div class="first_row">
+            {% if block.settings.image_picker1 != blank %}
+              <img src="{{ block.settings.image_picker1 | image_url }}" alt="{{ block.settings.image_picker1.alt }}" width="{{ block.settings.image_picker1.width }}" height="{{ block.settings.image_picker1.height }}">
+            {% endif %}
+            {% if block.settings.title %}
+            <h4>{{ block.settings.title }}</h4>
+            {% endif %}
+          </div>
+            {% endif %}
+      {%- endcase -%}
+    {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "What's in box",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "Box_contant",
+      "name": "Box contant",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_picker1",
+          "label": "t:sections.image-with-text.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "What's in box"
+    }
+  ]
+}
+{% endschema %}
