@@ -584,18 +584,6 @@
 </style>
 
 <script>
-    $(function() {
-    // Owl Carousel
-    var owl = $(".owl-carousel");
-    owl.owlCarousel({
-      stagePadding: 0,
-      singleItem:true,
-      items: 1,
-      margin: 10,
-      loop: false,
-      nav: true
-    });
-  });
 </script>
 <script>
   const radioButtons = document.querySelectorAll('input[type="radio"]');
@@ -701,6 +689,74 @@
         $('#owl-carousel').trigger('replace.owl.carousel', newItem).trigger('refresh.owl.carousel');
 
       }, 500);
+    });
+  });
+</script>
+<script>
+  $(function() {
+    function setCarouselSize() {
+      var totalWidth = $(window).width() > 1680 ? 1680 : $(window).width(),
+          totalHeight = $(window).height() > 1200 ? 1200 : $(window).height(),
+          optionWidth = $('.variant_option').width();
+          paddingWidth = totalWidth > 768 ? 80 : 32;
+          gapWidth = 48;
+          {% comment %} itemCount = $('.owl-item').length; {% endcomment %}
+      var w = 0,
+          h = 0;
+      if (totalWidth < 769) {
+        $("owl-carousel").empty();
+        var owl = $(".owl-carousel");
+        owl.owlCarousel({
+          stagePadding: 0,
+          singleItem:true,
+          items: 1,
+          margin: 10,
+          loop: false,
+          nav: true
+        });
+        return;
+      }
+        
+        
+      var width = totalWidth - optionWidth - paddingWidth * 2 - gapWidth,
+          height = totalHeight - 170;
+      
+      if (width < height) {
+        var possibleOptionWidth = totalWidth - height - optionWidth - paddingWidth * 2 - gapWidth,
+            size = width;
+        
+        if (possibleOptionWidth > 328)
+          size = height;
+
+        w = size; h = size;
+        {% comment %} $('.owl-nav').width(size); {% endcomment %}
+      } else {
+        w = width; h = height;
+        {% comment %} $('.owl-nav').width(width); {% endcomment %}
+      } 
+      $('.owl-carousel').width(w);
+      $('.owl-carousel').height(h);
+      $("owl-carousel").empty();
+      var owl = $(".owl-carousel");
+      owl.owlCarousel({
+        stagePadding: 0,
+        singleItem:true,
+        items: 1,
+        margin: 10,
+        loop: false,
+        nav: true
+      });
+      $('.owl-stage-outer').width(w);
+      $('.owl-stage-outer').height(h);
+      $('.owl-stage').height(h);
+      $('.owl-item').height(h);
+      $('.owl-item > .item').height(h);
+    }
+    $(document).ready(function() {
+      setCarouselSize();
+    });
+    $(window).resize(function() {
+      setCarouselSize();
     });
   });
 </script>

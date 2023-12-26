@@ -638,10 +638,10 @@ div#variant-wrapper-1::-webkit-scrollbar {
   display: none;
 }
 .contain {
-  width: 70%;
+  width: 100%;
 }
 .variant_option {
-  max-width: 328px;
+  min-width: 328px;
 }
 .owl-carousel .owl-item img {
   border-radius: 32px;
@@ -785,9 +785,9 @@ div#add-to-cart-form {
     background: #f5f6ed;
     padding: 50px 30px;
   }
-  .contain {
+  /* .contain {
     width: 60%;
-  }
+  } */
   .variant_option {
     width: 40%;
   }
@@ -943,4 +943,8 @@ div#add-to-cart-form {
   .second_row {
     width: 100%;
   }
+}
+.owl-carousel .owl-item img {
+  object-fit: cover;
+  object-position: center;
 }
