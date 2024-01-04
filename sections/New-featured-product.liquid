@@ -693,49 +693,15 @@
   });
 </script>
 <script>
-  $(function() {
-    function setCarouselSize() {
-      var totalWidth = $(window).width() > 1680 ? 1680 : $(window).width(),
-          totalHeight = $(window).height() > 1200 ? 1200 : $(window).height(),
-          optionWidth = $('.variant_option').width();
-          paddingWidth = totalWidth > 768 ? 80 : 32;
-          gapWidth = 48;
-          {% comment %} itemCount = $('.owl-item').length; {% endcomment %}
-      var w = 0,
-          h = 0;
-      if (totalWidth < 769) {
-        $("owl-carousel").empty();
-        var owl = $(".owl-carousel");
-        owl.owlCarousel({
-          stagePadding: 0,
-          singleItem:true,
-          items: 1,
-          margin: 10,
-          loop: false,
-          nav: true
-        });
-        return;
-      }
-        
-        
-      var width = totalWidth - optionWidth - paddingWidth * 2 - gapWidth,
-          height = totalHeight - 170;
-      
-      if (width < height) {
-        var possibleOptionWidth = totalWidth - height - optionWidth - paddingWidth * 2 - gapWidth,
-            size = width;
-        
-        if (possibleOptionWidth > 328)
-          size = height;
-
-        w = size; h = size;
-        {% comment %} $('.owl-nav').width(size); {% endcomment %}
-      } else {
-        w = width; h = height;
-        {% comment %} $('.owl-nav').width(width); {% endcomment %}
-      } 
-      $('.owl-carousel').width(w);
-      $('.owl-carousel').height(h);
+  function setCarouselSize() {
+    var totalWidth = parseInt($(window).width() > 1680 ? 1680 : $(window).width()),
+        totalHeight = parseInt(($(window).height() - 170) > 1200 ? 1200 : ($(window).height() - 170)),
+        optionWidth = parseInt($('.variant_option').width());
+        paddingWidth = totalWidth > 768 ? 50 : 32;
+        gapWidth = 48;
+        {% comment %} itemCount = $('.owl-item').length; {% endcomment %}
+  
+    if (totalWidth < 769) {
       $("owl-carousel").empty();
       var owl = $(".owl-carousel");
       owl.owlCarousel({
@@ -746,18 +712,52 @@
         loop: false,
         nav: true
       });
-      $('.owl-stage-outer').width(w);
-      $('.owl-stage-outer').height(h);
-      $('.owl-stage').height(h);
-      $('.owl-item').height(h);
-      $('.owl-item > .item').height(h);
+      return;
     }
-    $(document).ready(function() {
-      setCarouselSize();
+    
+
+    var width = totalWidth - optionWidth - paddingWidth * 2 - gapWidth,
+        height = totalHeight;
+
+    var w = width,
+        h = height;
+    if (width != height) {
+      possibleWidth = totalWidth - paddingWidth * 2 - gapWidth - 328;
+      if (possibleWidth > height) {
+        w = height;
+        h = height;
+        optionWidth = totalWidth - height - paddingWidth * 2 - gapWidth;
+      } else {
+        h = possibleWidth;
+        w = possibleWidth;
+        optionWidth = 328;
+      }
+      $('.variant_option').width(optionWidth);
+    } 
+    $('.contain').width(w);
+    $('.owl-carousel').width(w);
+    $('.owl-carousel').height(h);
+    $("owl-carousel").empty();
+    var owl = $(".owl-carousel");
+    owl.owlCarousel({
+      stagePadding: 0,
+      singleItem:true,
+      items: 1,
+      margin: 10,
+      loop: false,
+      nav: true
     });
-    $(window).resize(function() {
-      setCarouselSize();
-    });
+    $('.owl-stage-outer').width(w);
+    $('.owl-stage-outer').height(h);
+    $('.owl-stage').height(h);
+    $('.owl-item').height(h);
+    $('.owl-item > .item').height(h);
+  }
+  $(document).ready(function() {
+    setCarouselSize();
+  });
+  $(window).resize(function() {
+    setCarouselSize();
   });
 </script>
 {% schema %}

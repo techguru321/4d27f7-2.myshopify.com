@@ -163,7 +163,7 @@
   flex: 0 0 100%;
   padding: 0;
   margin: 0;
-  max-width: 44rem;
+  /* max-width: 44rem; */
   min-width: fit-content;
   border: none;
 }
