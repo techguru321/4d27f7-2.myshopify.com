@@ -163,6 +163,16 @@
       },
       {
         "type": "range",
+        "id": "page_width_product",
+        "min": 1000,
+        "max": 2000,
+        "step": 20,
+        "default": 1600,
+        "unit": "px",
+        "label": "Product page width"
+      },
+      {
+        "type": "range",
         "id": "spacing_sections",
         "min": 0,
         "max": 100,

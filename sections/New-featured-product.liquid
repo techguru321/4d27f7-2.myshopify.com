@@ -124,7 +124,7 @@
       {% comment %}
       {% endcomment %}
       <div class="product_wrp">
-        <div class="product-container">
+        <div class="product-container page-width">
           <div class="image_option product-page-width">
             <div class="contain">
               <div id="owl-carousel" class="owl-carousel owl-theme">
@@ -693,15 +693,21 @@
   });
 </script>
 <script>
-  function setCarouselSize() {
-    var totalWidth = parseInt($(window).width() > 1680 ? 1680 : $(window).width()),
-        totalHeight = parseInt(($(window).height() - 170) > 1200 ? 1200 : ($(window).height() - 170)),
-        optionWidth = parseInt($('.variant_option').width());
-        paddingWidth = totalWidth > 768 ? 50 : 32;
-        gapWidth = 48;
+  function setCarouselSize(scrollY = 0, scrollYLimit = 0) {
+    const wW = parseInt($(window).width()),
+          wH = parseInt($(window).height());
+
+    let space = parseInt($('.image_option').css('gap').match(/\d+/g)[0]),
+        containerMaxWidth = parseInt($('.product-container').css("max-width").match(/\d+/g)[0]),
+        optionMinWidth = parseInt($('.variant_option').css('min-width').match(/\d+/g)[0]),
+        stickyBarHeight = parseInt($(".product__sticky-bar-wrapper").height()) > 94 ? parseInt($(".product__sticky-bar-wrapper").height()) : 94,
+        optionWidth = parseInt($('.variant_option').width()),
+        
+        tWidth = wW > containerMaxWidth ? containerMaxWidth : wW,
+        xPadding = tWidth > 768 ? 50 : 32;
         {% comment %} itemCount = $('.owl-item').length; {% endcomment %}
-  
-    if (totalWidth < 769) {
+
+    if (tWidth < 769) {
       $("owl-carousel").empty();
       var owl = $(".owl-carousel");
       owl.owlCarousel({
@@ -714,32 +720,31 @@
       });
       return;
     }
-    
 
-    var width = totalWidth - optionWidth - paddingWidth * 2 - gapWidth,
-        height = totalHeight;
+    var width = tWidth - (optionWidth + xPadding * 2 + space),
+        height = wH - stickyBarHeight - space * 2;
 
-    var w = width,
-        h = height;
+    height = height > 1200 ? 1200 : height;
     if (width != height) {
-      possibleWidth = totalWidth - paddingWidth * 2 - gapWidth - 328;
+      possibleWidth = tWidth - xPadding * 2 - space - optionMinWidth;
       if (possibleWidth > height) {
-        w = height;
-        h = height;
-        optionWidth = totalWidth - height - paddingWidth * 2 - gapWidth;
+        width = height;
+        optionWidth = tWidth - height - xPadding * 2 - space;
       } else {
-        h = possibleWidth;
-        w = possibleWidth;
-        optionWidth = 328;
+        height = possibleWidth;
+        width = possibleWidth;
+        optionWidth = optionMinWidth;
       }
       $('.variant_option').width(optionWidth);
     } 
-    $('.contain').width(w);
-    $('.owl-carousel').width(w);
-    $('.owl-carousel').height(h);
-    $("owl-carousel").empty();
-    var owl = $(".owl-carousel");
-    owl.owlCarousel({
+    
+    $('.variant_option').css('margin-top', parseInt((wH - height - stickyBarHeight) / 2) + 'px');
+    $('.variant_option').css('margin-bottom', parseInt((wH - height - stickyBarHeight) / 2) + 'px');
+    
+    $('.contain').width(width);
+    $('.owl-carousel').width(width).height(height);
+    
+    $(".owl-carousel").owlCarousel({
       stagePadding: 0,
       singleItem:true,
       items: 1,
@@ -747,11 +752,11 @@
       loop: false,
       nav: true
     });
-    $('.owl-stage-outer').width(w);
-    $('.owl-stage-outer').height(h);
-    $('.owl-stage').height(h);
-    $('.owl-item').height(h);
-    $('.owl-item > .item').height(h);
+
+    $('.owl-stage-outer').width(width).height(height);
+    $('.owl-stage').height(height);
+    $('.owl-item').height(height);
+    $('.owl-item > .item').height(height);
   }
   $(document).ready(function() {
     setCarouselSize();

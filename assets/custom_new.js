@@ -1,10 +1,12 @@
 $(document).ready(function () {
   $(window).scroll(function () {
-    if ($(this).scrollTop() > 83) {
+    var scrollYLimit = 83;
+    if ($(this).scrollTop() > scrollYLimit) {
       $(".product__sticky-bar-wrapper").addClass("sticky-bar-visible");
     } else {
       $(".product__sticky-bar-wrapper").removeClass("sticky-bar-visible");
     }
+    setCarouselSize($(this).scrollTop() , scrollYLimit);
   });
 
   // Function to update the span content based on the selected input
